@@ -1,7 +1,6 @@
 package com.example.opsc7311
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +34,7 @@ import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockSelection
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.Date
 import java.util.Locale
 
@@ -57,11 +57,13 @@ class MainActivity : ComponentActivity() {
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimeSheetApp(modifier: Modifier = Modifier) {
+fun TimeSheetApp() {
 
 
+    /* The dates and time are in a Date() class so we need to convert
+     * them to Strings.
+     */
     val localDateToDate = SimpleDateFormat(
         "yyyy-MM-dd",
         Locale.getDefault()
@@ -82,76 +84,66 @@ fun TimeSheetApp(modifier: Modifier = Modifier) {
         Locale.getDefault()
     )
 
+    /* The values outputted by the pickers are stored here and their string
+     * counterparts
+     */
     var selectedDate: Date by remember { mutableStateOf(Date()) }
-    val formattedDate = dateToTextDisplay.format(selectedDate)
+    val formattedDateString = dateToTextDisplay.format(selectedDate)
 
     var startTime: Date by remember { mutableStateOf(Date()) }
-    val formattedStartTime = timeToDateDisplay.format(startTime)
+    val formattedStartTimeString = timeToDateDisplay.format(startTime)
 
     var endTime: Date by remember { mutableStateOf(Date()) }
-    val formattedEndTime = timeToDateDisplay.format(endTime)
+    val formattedEndTimeString = timeToDateDisplay.format(endTime)
 
 
+    // Calendar picker
     val calendarState = UseCaseState()
-
-    CalendarDialog(
-        state = calendarState,
-        config = CalendarConfig(
-            monthSelection = true,
-            yearSelection = true
-        ),
-        selection = CalendarSelection.Date { date ->
+    DateCalPicker(calendarState = calendarState,
+        onSelectDate = { date ->
             selectedDate = localDateToDate.parse(date.toString()) as Date
-        }
-    )
+        })
 
+    // First time picker
     val clockState1 = UseCaseState()
+    TimeClockPicker(clockState = clockState1, onTimeSelected = { hours, minutes ->
+        startTime = timeToDate.parse("${hours}:${minutes}") as Date
+    })
 
-    ClockDialog(
-        state = clockState1,
-        selection = ClockSelection.HoursMinutes { hours, minutes ->
-            startTime = timeToDate.parse("${hours}:${minutes}") as Date
-
-        }
-    )
-
+    // Second time picker
     val clockState2 = UseCaseState()
+    TimeClockPicker(clockState = clockState2, onTimeSelected = { hours, minutes ->
+        endTime = timeToDate.parse("${hours}:${minutes}") as Date
+    })
 
-    ClockDialog(
-        state = clockState2,
-        selection = ClockSelection.HoursMinutes { hours, minutes ->
-            endTime = timeToDate.parse("${hours}:${minutes}") as Date
-        }
-    )
-
+    // Show the column of pickers and dates
     Column(
         modifier = Modifier.padding(all = 16.dp)
     ) {
         DateSurface(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
-            date = formattedDate,
+                .padding(bottom = 8.dp),
+            date = formattedDateString,
             onIconClicked = {
                 calendarState.show()
             }
         )
         TimeSurface(
             title = "Start Time",
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
-            time = formattedStartTime,
+                .padding(bottom = 8.dp),
+            time = formattedStartTimeString,
             onIconClicked = {
                 clockState1.show()
             }
         )
         TimeSurface(
             title = "End Time",
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            time = formattedEndTime,
+            modifier = Modifier
+                .fillMaxWidth(),
+            time = formattedEndTimeString,
             onIconClicked = {
                 clockState2.show()
             }
@@ -160,6 +152,36 @@ fun TimeSheetApp(modifier: Modifier = Modifier) {
 
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DateCalPicker(
+    calendarState: UseCaseState,
+    onSelectDate: (LocalDate) -> Unit
+)
+{
+    CalendarDialog(
+        state = calendarState,
+        config = CalendarConfig(
+            monthSelection = true,
+            yearSelection = true
+        ),
+        selection = CalendarSelection.Date (onSelectDate = onSelectDate)
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TimeClockPicker(
+    clockState: UseCaseState,
+    onTimeSelected: (Int, Int) -> Unit
+
+) {
+    ClockDialog(
+        state = clockState,
+        selection = ClockSelection.HoursMinutes(onPositiveClick = onTimeSelected)
+    )
+}
 @Composable
 fun DateSurface(
     date: String,
