@@ -21,7 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedSuggestionChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.example.opsc7311.ui.theme.Opsc7311Theme
 import com.maxkeppeker.sheets.core.models.base.UseCaseState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
@@ -107,7 +110,13 @@ fun TimeSheetApp() {
     var endTime by remember { mutableStateOf(timeToDateDisplay.format(Date())) }
 
     var showImageDetail by remember { mutableStateOf(false) }
+    var showCategoryPopup by remember { mutableStateOf(false) }
+
     var selectedImageId by remember { mutableStateOf(R.drawable.image_1) }
+
+    val allCategories = remember { mutableStateListOf("test", "butter", "mash",
+        "apples", "cream", "tomato", "lemon",
+        "sauce", "night-cream", "zebra", "lion", "coffee") }
 
     // Calendar picker
     val calendarState = UseCaseState()
@@ -119,13 +128,17 @@ fun TimeSheetApp() {
     // First time picker
     val clockState1 = UseCaseState()
     TimeClockPicker(clockState = clockState1, onTimeSelected = { hours, minutes ->
-        startTime = "${hours}:${minutes}"
+        startTime = hours.toString().padStart(2, '0') +
+                ":" +
+                minutes.toString().padStart(2, '0')
     })
 
     // Second time picker
     val clockState2 = UseCaseState()
     TimeClockPicker(clockState = clockState2, onTimeSelected = { hours, minutes ->
-        endTime = "${hours}:${minutes}"
+        endTime = hours.toString().padStart(2, '0') +
+                ":" +
+                minutes.toString().padStart(2, '0')
     })
 
     // Show the column of pickers and dates
@@ -176,34 +189,51 @@ fun TimeSheetApp() {
 
         CategorySelector(
             modifier = Modifier,
-            onCategoryClick = {},
-            categories = listOf(
-                "test", "butter", "mash",
-                "apples", "cream", "tomato", "lemon",
-                "sauce", "night-cream", "zebra", "lion", "coffee"
-            )
-        )
+            categories = allCategories
+        ) {
+            showCategoryPopup = true
+        }
 
         ImageSelector(
             modifier = Modifier.height(160.dp),
             onManageImagesClick = {},
-            images = listOf(
+            images = mutableListOf(
                 R.drawable.image_1, R.drawable.image_2,
                 R.drawable.image_3, R.drawable.image_4
             ),
-            onImageClicked = {imageID: Int ->
+            onImageClicked = { imageID: Int ->
                 showImageDetail = true
                 selectedImageId = imageID
             }
         )
 
-        if(showImageDetail)
-        {
-            ShowImageInDetail (
+        if (showImageDetail) {
+            ShowImageInDetail(
                 imageID = selectedImageId,
                 modifier = Modifier
             ) {
                 showImageDetail = false
+            }
+        }
+
+
+        var isNewCategoryUnique by remember { mutableStateOf(true) }
+        var newCategoryText by remember { mutableStateOf("") }
+
+        if (showCategoryPopup) {
+            ShowCategories(
+                text = newCategoryText,
+                isUnique = isNewCategoryUnique,
+                onValueChanged = {
+                    newCategoryText = it
+                    isNewCategoryUnique = !allCategories.contains(newCategoryText)
+                },
+                onDismissRequested = {
+                    showCategoryPopup = false
+                }
+            ) {
+                allCategories.add(newCategoryText)
+                showCategoryPopup = false
             }
         }
 
@@ -218,25 +248,58 @@ fun TimeSheetApp() {
 
 
 
+@Composable
+fun ShowCategories(
+    text: String,
+    isUnique: Boolean,
+    onValueChanged: (it: String) -> Unit,
+    onDismissRequested: () -> Unit,
+    onConfirmClicked: () -> Unit
+) {
 
-
-
-
-
-
-
-
-
-
-
+    AlertDialog(
+        onDismissRequest = onDismissRequested,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        title = { Text("Create a category") },
+        text = {
+            TextField(
+                value = text,
+                onValueChange = onValueChanged,
+                singleLine = true,
+                label = { Text(text = "Name") },
+                supportingText = {
+                    if(!isUnique)
+                    {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "There is already a category with this name!"
+                        )
+                    }
+                }
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = onConfirmClicked,
+                enabled = isUnique
+            ) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismissRequested) {
+                Text("Cancel")
+            }
+        }
+    )
+}
 
 @Composable
 fun ShowImageInDetail(
     @DrawableRes imageID: Int,
     modifier: Modifier = Modifier,
     onDismissRequested: () -> Unit
-)
-{
+) {
     Dialog(onDismissRequest = onDismissRequested) {
         Column {
             Image(
@@ -251,19 +314,18 @@ fun ShowImageInDetail(
 
 @Composable
 fun ImageSelector(
-    images: List<Int>,
+    images: MutableList<Int>,
     modifier: Modifier = Modifier,
     onManageImagesClick: () -> Unit,
     onImageClicked: (imageID: Int) -> Unit
-)
-{
+) {
     Text(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
                 enabled = true,
             ) { onManageImagesClick() }
-            .padding(top = 8.dp, bottom = 12.dp, end = 8.dp),
+            .padding(top = 8.dp, bottom = 8.dp),
         text = "Images ᐳ",
         style = MaterialTheme.typography.labelLarge
     )
@@ -283,23 +345,23 @@ fun ImageSelector(
 
     }
 }
+
 @Composable
 fun CategorySelector(
     modifier: Modifier = Modifier,
-    onCategoryClick: () -> Unit,
-    categories: List<String>
-)
-{
-    Column (
+    categories: MutableList<String>,
+    onCategoryClick: () -> Unit
+) {
+    Column(
         modifier = modifier
-    ){
+    ) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(
                     enabled = true,
-                ) { onCategoryClick }
-                .padding(top = 8.dp, bottom = 4.dp, end = 8.dp),
+                ) { onCategoryClick.invoke() }
+                .padding(top = 8.dp, bottom = 8.dp),
             text = "Categories ᐳ",
             style = MaterialTheme.typography.labelLarge
         )
@@ -323,8 +385,7 @@ fun CategorySelector(
 
 // Show the difference between the start and end time in a box.
 @Composable
-fun DurationDisplay(modifier: Modifier = Modifier, startTime: String, endTime: String)
-{
+fun DurationDisplay(modifier: Modifier = Modifier, startTime: String, endTime: String) {
 
     // Convert the times to minutes
     val minutes1 = startTime.split(":")[0].toInt() * 60 + startTime.split(":")[1].toInt()
@@ -332,8 +393,7 @@ fun DurationDisplay(modifier: Modifier = Modifier, startTime: String, endTime: S
 
     var hoursBetween = (minutes2 - minutes1).toDouble() / 60.0
 
-    if(minutes2 < minutes1)
-    {
+    if (minutes2 < minutes1) {
         hoursBetween += 24
     }
 
@@ -347,11 +407,11 @@ fun DurationDisplay(modifier: Modifier = Modifier, startTime: String, endTime: S
         tonalElevation = 2.dp
     )
     {
-        Column (
+        Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
-        ){
+        ) {
             Text(
                 text = displayHours,
                 style = MaterialTheme.typography.displayMedium,
@@ -370,15 +430,14 @@ fun DurationDisplay(modifier: Modifier = Modifier, startTime: String, endTime: S
 fun DateCalPicker(
     calendarState: UseCaseState,
     onSelectDate: (LocalDate) -> Unit
-)
-{
+) {
     CalendarDialog(
         state = calendarState,
         config = CalendarConfig(
             monthSelection = true,
             yearSelection = true
         ),
-        selection = CalendarSelection.Date (onSelectDate = onSelectDate)
+        selection = CalendarSelection.Date(onSelectDate = onSelectDate)
     )
 }
 
@@ -394,6 +453,7 @@ fun TimeClockPicker(
         selection = ClockSelection.HoursMinutes(onPositiveClick = onTimeSelected)
     )
 }
+
 @Composable
 fun DateSurface(
     date: String,
