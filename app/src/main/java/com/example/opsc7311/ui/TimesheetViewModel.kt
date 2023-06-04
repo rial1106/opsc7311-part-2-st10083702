@@ -4,8 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.opsc7311.Timesheet
-import com.example.opsc7311.util.Constants
+import com.example.opsc7311.util.Converters
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,12 +14,12 @@ import java.util.Date
 class TimesheetViewModel : ViewModel() {
 
     // UI State
-    private val _uiState = MutableStateFlow(Timesheet())
-    val uiState: StateFlow<Timesheet> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(TimesheetUiState())
+    val uiState: StateFlow<TimesheetUiState> = _uiState.asStateFlow()
 
     fun updateDate(date: String){
-        val dateObject: Date = Constants.localDateToDate.parse(date) as Date
-        val newDate: String = Constants.dateToTextDisplay.format(dateObject)
+        val dateObject: Date = Converters.localDateToDate.parse(date) as Date
+        val newDate: String = Converters.dateToTextDisplay.format(dateObject)
         _uiState.update { currentState ->
             currentState.copy(date = newDate)
         }

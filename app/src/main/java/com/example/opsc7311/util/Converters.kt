@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-object Constants {
+object Converters {
 
 
     /* The dates and time are in a Date() class so we need to convert

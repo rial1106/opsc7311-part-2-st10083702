@@ -1,15 +1,16 @@
-package com.example.opsc7311
+package com.example.opsc7311.ui
 
 import androidx.annotation.DrawableRes
-import com.example.opsc7311.util.Constants
+import com.example.opsc7311.R
+import com.example.opsc7311.util.Converters
 import com.maxkeppeker.sheets.core.models.base.UseCaseState
 import java.util.Date
 
-data class Timesheet(
+data class TimesheetUiState(
     val title: String = "Untitled",
-    val date: String = Constants.dateToTextDisplay.format(Date()),
-    val startTime: String = Constants.timeToDateDisplay.format(Date()),
-    val endTime: String = Constants.timeToDateDisplay.format(Date()),
+    val date: String = Converters.dateToTextDisplay.format(Date()),
+    val startTime: String = Converters.timeToDateDisplay.format(Date()),
+    val endTime: String = Converters.timeToDateDisplay.format(Date()),
     val duration: String = "0",
     val calendarState: UseCaseState = UseCaseState(),
     val clockState1: UseCaseState = UseCaseState(),
