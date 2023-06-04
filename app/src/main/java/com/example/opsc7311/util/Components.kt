@@ -1,4 +1,4 @@
-package com.example.opsc7311.ui
+package com.example.opsc7311.util
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
