@@ -4,19 +4,38 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.example.opsc7311.ui.models.Timesheet
 import com.example.opsc7311.util.Converters
+import com.example.opsc7311.viewmodels.SharedViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.util.Date
 
-class TimesheetViewModel : ViewModel() {
+class TimesheetViewModel(timesheet: Timesheet) : ViewModel() {
 
     // UI State
     private val _uiState = MutableStateFlow(TimesheetUiState())
     val uiState: StateFlow<TimesheetUiState> = _uiState.asStateFlow()
 
+    init {
+        _uiState.update { currentState ->
+            currentState.copy(
+                id = timesheet.id,
+                title = timesheet.title,
+                date = timesheet.date,
+                startTime = timesheet.startTime,
+                endTime = timesheet.endTime,
+                duration = calculateDuration(
+                    startTime = timesheet.startTime,
+                    endTime = timesheet.endTime
+                ),
+                categories = timesheet.categories,
+                images = timesheet.images
+            )
+        }
+    }
     fun updateDate(date: String){
         val dateObject: Date = Converters.localDateToDate.parse(date) as Date
         val newDate: String = Converters.dateToTextDisplay.format(dateObject)

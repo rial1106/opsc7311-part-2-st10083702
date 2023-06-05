@@ -7,6 +7,7 @@ import com.maxkeppeker.sheets.core.models.base.UseCaseState
 import java.util.Date
 
 data class TimesheetUiState(
+    val id: Int = 0,
     val title: String = "Untitled",
     val date: String = Converters.dateToTextDisplay.format(Date()),
     val startTime: String = Converters.timeToDateDisplay.format(Date()),

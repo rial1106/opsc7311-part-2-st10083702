@@ -1,6 +1,5 @@
 package com.example.opsc7311.ui.screens.timesheet
 
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -41,15 +40,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.opsc7311.ui.theme.Opsc7311Theme
 import com.example.opsc7311.util.DateCalPicker
 import com.example.opsc7311.util.TimeClockPicker
-import com.example.opsc7311.ui.theme.Opsc7311Theme
 
 
 @Composable
-fun TimesheetEditScreen(id: Int, timesheetViewModel: TimesheetViewModel = viewModel()) {
-
-    Log.d("aaaaaa", id.toString())
+fun TimesheetEditScreen(timesheetViewModel: TimesheetViewModel) {
 
     val timesheetUiState by timesheetViewModel.uiState.collectAsState()
 
@@ -406,6 +403,6 @@ fun TimeDisplay(
 @Composable
 fun TimesheetPreview() {
     Opsc7311Theme {
-        TimesheetEditScreen(-1)
+        TimesheetEditScreen(timesheetViewModel = viewModel())
     }
 }
