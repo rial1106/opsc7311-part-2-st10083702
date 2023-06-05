@@ -19,7 +19,7 @@ class FilterBarViewModel: ViewModel() {
 
     fun updateEndDate(date: String){
         _uiState.update { currentState ->
-            currentState.copy(startDate = date)
+            currentState.copy(endDate = date)
         }
     }
 
@@ -34,6 +34,33 @@ class FilterBarViewModel: ViewModel() {
     {
         _uiState.update { currentState ->
             currentState.copy(endDateFilterExpanded = value)
+        }
+    }
+
+    fun setShowStartDatePicker(value: Boolean)
+    {
+        if(value)
+        {
+            _uiState.value.startDatePickerState.show()
+        } else {
+            _uiState.value.startDatePickerState.hide()
+        }
+    }
+
+    fun setShowEndDatePicker(value: Boolean)
+    {
+        if(value)
+        {
+            _uiState.value.endDatePickerState.show()
+        } else {
+            _uiState.value.endDatePickerState.hide()
+        }
+    }
+
+    fun reset()
+    {
+        _uiState.update {
+            FilterBarUiState()
         }
     }
 }

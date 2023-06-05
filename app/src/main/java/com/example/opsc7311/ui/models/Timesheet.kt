@@ -10,13 +10,6 @@ data class Timesheet(
     val date: String = Converters.dateToTextDisplay.format(Date()),
     val startTime: String = Converters.timeToDateDisplay.format(Date()),
     val endTime: String = Converters.timeToDateDisplay.format(Date()),
-    val categories: MutableList<String> = mutableListOf(
-        "test", "butter", "mash",
-        "apples", "cream", "tomato",
-        "lemon", "sauce", "night-cream",
-        "zebra", "lion", "coffee"),
-    val images: MutableList<Int> = mutableListOf(
-        R.drawable.image_1, R.drawable.image_2,
-        R.drawable.image_3, R.drawable.image_4
-    )
+    val categories: MutableList<String> = mutableListOf(),
+    val images: MutableList<Int> = mutableListOf()
 )

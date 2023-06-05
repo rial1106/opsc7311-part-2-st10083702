@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -42,6 +43,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.opsc7311.ui.theme.Opsc7311Theme
 import com.example.opsc7311.util.DateCalPicker
+import com.example.opsc7311.util.ImageRow
 import com.example.opsc7311.util.TimeClockPicker
 
 
@@ -52,7 +54,8 @@ fun TimesheetEditScreen(timesheetViewModel: TimesheetViewModel) {
 
     // Calendar picker
     DateCalPicker(calendarState = timesheetUiState.calendarState,
-        onSelectDate = {date-> timesheetViewModel.updateDate(date.toString())}
+        onSelectDate = {date-> timesheetViewModel.updateDate(date.toString())},
+        onNegativeClick = {}
     )
 
     // First time picker
@@ -250,20 +253,11 @@ fun Gallery(
         style = MaterialTheme.typography.labelLarge
     )
 
-    LazyRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(images) { imageResource ->
-            Image(
-                modifier = Modifier.clickable { onImageClicked(imageResource) },
-                painter = painterResource(id = imageResource),
-                contentDescription = null,
-                contentScale = ContentScale.Inside
-            )
-        }
-
-    }
+    ImageRow(
+        images = images,
+        onImageClicked = onImageClicked,
+        modifier = Modifier.heightIn(max = 150.dp)
+    )
 }
 
 @Composable
@@ -403,6 +397,8 @@ fun TimeDisplay(
 @Composable
 fun TimesheetPreview() {
     Opsc7311Theme {
-        TimesheetEditScreen(timesheetViewModel = viewModel())
+        TimesheetEditScreen(
+            timesheetViewModel = viewModel()
+        )
     }
 }

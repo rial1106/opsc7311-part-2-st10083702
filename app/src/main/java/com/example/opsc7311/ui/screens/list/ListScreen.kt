@@ -25,6 +25,7 @@ import com.example.opsc7311.viewmodels.SharedViewModel
 fun TimesheetList(
     sharedViewModel: SharedViewModel,
     onTimesheetClicked: (Int) -> Unit,
+    onImageClicked: (Int) -> Unit,
     modifier: Modifier = Modifier
 )
 {
@@ -35,7 +36,7 @@ fun TimesheetList(
     )
     {
         items(
-            items = sharedViewModel.list,
+            items = sharedViewModel.filteredList,
             key = { timesheet ->
                 // Return a stable + unique key for the item
                 timesheet.id
@@ -44,7 +45,8 @@ fun TimesheetList(
             
             TimesheetListItem(
                 timeSheet = timeSheet,
-                onTimesheetClicked = onTimesheetClicked
+                onTimesheetClicked = onTimesheetClicked,
+                onImageClicked = onImageClicked
             )
         }
     }
@@ -77,7 +79,10 @@ fun TimesheetListScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 72.dp, start = 16.dp, end = 16.dp),
-            onTimesheetClicked = onTimesheetClicked
+            onTimesheetClicked = onTimesheetClicked,
+            onImageClicked = {
+                // Do not do anything
+            }
         )
     }
 }
