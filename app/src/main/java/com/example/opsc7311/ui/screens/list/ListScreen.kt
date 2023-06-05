@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.opsc7311.ui.screens.list.appbar.FilterBar
+import com.example.opsc7311.ui.screens.list.appbar.FilterBarViewModel
 import com.example.opsc7311.viewmodels.SharedViewModel
 
 @Composable
@@ -54,12 +56,18 @@ fun TimesheetList(
 fun TimesheetListScreen(
     onFabClicked: () -> Unit,
     onTimesheetClicked: (Int) -> Unit,
-    sharedViewModel: SharedViewModel
+    sharedViewModel: SharedViewModel,
+    filterBarViewModel: FilterBarViewModel
 )
 {
 
     Scaffold(
-        topBar = {},
+        topBar = {
+            FilterBar(
+                sharedViewModel = sharedViewModel,
+                filterBarViewModel = filterBarViewModel
+            )
+        },
         floatingActionButton = {
             ListFab(onFabClicked = onFabClicked)
         }
@@ -68,7 +76,7 @@ fun TimesheetListScreen(
             sharedViewModel = sharedViewModel,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(all = 16.dp),
+                .padding(top = 72.dp, start = 16.dp, end = 16.dp),
             onTimesheetClicked = onTimesheetClicked
         )
     }
@@ -99,6 +107,7 @@ fun ListPreview()
     TimesheetListScreen(
         onFabClicked = {},
         onTimesheetClicked = {},
-        sharedViewModel = viewModel()
+        sharedViewModel = viewModel(),
+        filterBarViewModel = viewModel()
     )
 }

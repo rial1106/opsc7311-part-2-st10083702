@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.opsc7311.ui.models.Timesheet
 import com.example.opsc7311.ui.screens.list.TimesheetListScreen
+import com.example.opsc7311.ui.screens.list.appbar.FilterBarViewModel
 import com.example.opsc7311.ui.screens.timesheet.TimesheetEditScreen
 import com.example.opsc7311.ui.screens.timesheet.TimesheetViewModel
 import com.example.opsc7311.viewmodels.SharedViewModel
@@ -35,6 +36,8 @@ fun TimesheetApp(
         composable(
             route = Screens.LIST_WINDOW_KEY,
         ) {
+            val filterBarViewModel: FilterBarViewModel = viewModel()
+
             TimesheetListScreen(
                 onFabClicked = {
                     navController.navigate(
@@ -47,7 +50,8 @@ fun TimesheetApp(
                         route = "Edit/${id}"
                     )
                 },
-                sharedViewModel = sharedViewModel
+                sharedViewModel = sharedViewModel,
+                filterBarViewModel = filterBarViewModel
             )
         }
 
