@@ -1,6 +1,5 @@
 package com.example.opsc7311.ui.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -87,43 +86,45 @@ fun TimesheetApp(
                     sharedViewModel.deleteTimesheet(editScreenViewModel.uiState.value.id)
                     navController.navigate(
                         route = "List"
-                    )
-                }
-            ) {
+                    ) {
+                        popUpTo(0)
+                    }
+                },
+                onSavePressed = {
 
-                if(editScreenViewModel.uiState.value.id == -1)
-                {
-                    sharedViewModel.addTimesheet(
-                        Timesheet(
-                            id = IdGenerator.getNewId(),
-                            title = editScreenViewModel.uiState.value.title,
-                            date = editScreenViewModel.uiState.value.date,
-                            startTime = editScreenViewModel.uiState.value.startTime,
-                            endTime = editScreenViewModel.uiState.value.endTime,
-                            categories = editScreenViewModel.uiState.value.categories,
-                            images = editScreenViewModel.uiState.value.images
+                    if (editScreenViewModel.uiState.value.id == -1) {
+                        sharedViewModel.addTimesheet(
+                            Timesheet(
+                                id = IdGenerator.getNewId(),
+                                title = editScreenViewModel.uiState.value.title,
+                                date = editScreenViewModel.uiState.value.date,
+                                startTime = editScreenViewModel.uiState.value.startTime,
+                                endTime = editScreenViewModel.uiState.value.endTime,
+                                categories = editScreenViewModel.uiState.value.categories,
+                                images = editScreenViewModel.uiState.value.images
+                            )
                         )
-                    )
-                } else {
-                    sharedViewModel.editTimesheet(
-                        Timesheet(
-                            id = editScreenViewModel.uiState.value.id,
-                            title = editScreenViewModel.uiState.value.title,
-                            date = editScreenViewModel.uiState.value.date,
-                            startTime = editScreenViewModel.uiState.value.startTime,
-                            endTime = editScreenViewModel.uiState.value.endTime,
-                            categories = editScreenViewModel.uiState.value.categories,
-                            images = editScreenViewModel.uiState.value.images
+                    } else {
+                        sharedViewModel.editTimesheet(
+                            Timesheet(
+                                id = editScreenViewModel.uiState.value.id,
+                                title = editScreenViewModel.uiState.value.title,
+                                date = editScreenViewModel.uiState.value.date,
+                                startTime = editScreenViewModel.uiState.value.startTime,
+                                endTime = editScreenViewModel.uiState.value.endTime,
+                                categories = editScreenViewModel.uiState.value.categories,
+                                images = editScreenViewModel.uiState.value.images
+                            )
                         )
-                    )
-                }
+                    }
 
-                navController.navigate(
-                    route = "List"
-                ) {
-                    popUpTo(0)
+                    navController.navigate(
+                        route = "List"
+                    ) {
+                        popUpTo(0)
+                    }
                 }
-            }
+            )
         }
     }
 }
