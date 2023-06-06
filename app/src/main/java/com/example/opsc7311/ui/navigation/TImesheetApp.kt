@@ -91,8 +91,6 @@ fun TimesheetApp(
                 }
             ) {
 
-                Log.d("aaaaaa-ID", editScreenViewModel.uiState.value.id.toString())
-
                 if(editScreenViewModel.uiState.value.id == -1)
                 {
                     sharedViewModel.addTimesheet(
@@ -119,9 +117,12 @@ fun TimesheetApp(
                         )
                     )
                 }
+
                 navController.navigate(
                     route = "List"
-                )
+                ) {
+                    popUpTo(0)
+                }
             }
         }
     }
