@@ -61,7 +61,7 @@ fun TimesheetListScreen(
                     filterBarViewModel.setShowStartDatePicker(false)
 
                 },
-                onEndDateSelected = {date->
+                onEndDateSelected = { date->
                     filterBarViewModel.updateEndDate(date.toString())
 
                     sharedViewModel.setEndDate(date.toString())

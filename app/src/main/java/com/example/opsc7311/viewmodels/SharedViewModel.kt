@@ -1,5 +1,6 @@
 package com.example.opsc7311.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.opsc7311.ui.models.Timesheet
 import com.example.opsc7311.util.Converters
@@ -72,6 +73,12 @@ class SharedViewModel : ViewModel() {
     fun addTimesheet(timesheet: Timesheet) {
         _uiState.value.list.add(timesheet)
         filterList()
+
+        val newArr = _uiState.value.list
+        Log.d("aaaaaaa-newArr-vm", newArr.toList().toString())
+        _uiState.update { currentState ->
+            currentState.copy(list = newArr)
+        }
     }
 
     fun deleteTimesheet(id: Int) {

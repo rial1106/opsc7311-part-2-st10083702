@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.opsc7311.R
 import com.example.opsc7311.util.DateCalPicker
 import com.example.opsc7311.util.ImageRow
 import com.example.opsc7311.util.TimeClockPicker

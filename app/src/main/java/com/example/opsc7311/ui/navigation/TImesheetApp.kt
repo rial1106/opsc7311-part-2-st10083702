@@ -27,7 +27,8 @@ object Screens {
 @Composable
 fun TimesheetApp(
     sharedViewModel: SharedViewModel = viewModel(),
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    filterBarViewModel: FilterBarViewModel = viewModel()
 ) {
     NavHost(
         navController = navController,
@@ -37,7 +38,6 @@ fun TimesheetApp(
         composable(
             route = Screens.LIST_WINDOW_KEY,
         ) {
-            val filterBarViewModel: FilterBarViewModel = viewModel()
 
             TimesheetListScreen(
                 onFabClicked = {
@@ -83,7 +83,10 @@ fun TimesheetApp(
             TimesheetEditScreen(
                 editScreenViewModel = editScreenViewModel,
                 onBackPressed = {
-                                // TODO
+                    sharedViewModel.deleteTimesheet(editScreenViewModel.uiState.value.id)
+                    navController.navigate(
+                        route = "List"
+                    )
                 }
             ) {
                 sharedViewModel.deleteTimesheet(editScreenViewModel.uiState.value.id)
@@ -98,9 +101,6 @@ fun TimesheetApp(
                         images = editScreenViewModel.uiState.value.images
                     )
                 )
-                navController.navigate(
-                    route = "List"
-                )
                 Log.d(
                     "aaaaaaaa-filtered", sharedViewModel.uiState.value.filteredList.toList()
                         .toString()
@@ -108,6 +108,9 @@ fun TimesheetApp(
                 Log.d(
                     "aaaaaaaa-normal", sharedViewModel.uiState.value.list.toList()
                         .toString()
+                )
+                navController.navigate(
+                    route = "List"
                 )
             }
         }
