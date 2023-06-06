@@ -90,4 +90,15 @@ class SharedViewModel : ViewModel() {
         _uiState.value.list.removeIf { it.id == id }
         filterList()
     }
+
+    fun getTimeSheetOrReturnNew(id: Int): Timesheet
+    {
+        var timesheet = _uiState.value.list.find { it.id == id }
+        if(timesheet == null)
+        {
+            timesheet = Timesheet()
+        }
+
+        return timesheet
+    }
 }

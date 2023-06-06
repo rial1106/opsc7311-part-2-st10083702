@@ -1,4 +1,4 @@
-package com.example.opsc7311.ui.screens.timesheet
+package com.example.opsc7311.ui.screens.edit
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
@@ -8,7 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.example.opsc7311.ui.screens.timesheet.appbar.EditBar
+import com.example.opsc7311.ui.models.Timesheet
+import com.example.opsc7311.ui.screens.edit.appbar.EditBar
+import com.example.opsc7311.util.IdGenerator
+import com.example.opsc7311.viewmodels.SharedViewModel
 
 
 @Composable
@@ -68,16 +71,44 @@ fun EditScreen(
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TimesheetEditScreen(
+    sharedViewModel: SharedViewModel,
     editScreenViewModel: EditScreenViewModel,
     onBackPressed: () -> Unit,
-    onSavePressed: () -> Unit
+    afterSavePressed: () -> Unit
 ) {
     Scaffold(
         topBar = {
             EditBar(
                 editScreenViewModel = editScreenViewModel,
                 onBackPressed = onBackPressed,
-                onSavePressed = onSavePressed
+                onSavePressed = {
+                    if (editScreenViewModel.uiState.value.id == -1) {
+                        sharedViewModel.addTimesheet(
+                            Timesheet(
+                                id = IdGenerator.getNewId(),
+                                title = editScreenViewModel.uiState.value.title,
+                                date = editScreenViewModel.uiState.value.date,
+                                startTime = editScreenViewModel.uiState.value.startTime,
+                                endTime = editScreenViewModel.uiState.value.endTime,
+                                categories = editScreenViewModel.uiState.value.categories,
+                                images = editScreenViewModel.uiState.value.images
+                            )
+                        )
+                    } else { // Update instead on adding
+                        sharedViewModel.editTimesheet(
+                            Timesheet(
+                                id = editScreenViewModel.uiState.value.id,
+                                title = editScreenViewModel.uiState.value.title,
+                                date = editScreenViewModel.uiState.value.date,
+                                startTime = editScreenViewModel.uiState.value.startTime,
+                                endTime = editScreenViewModel.uiState.value.endTime,
+                                categories = editScreenViewModel.uiState.value.categories,
+                                images = editScreenViewModel.uiState.value.images
+                            )
+                        )
+                    }
+                    afterSavePressed()
+                }
             )
         }
     ) {

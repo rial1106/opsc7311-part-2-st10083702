@@ -7,7 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.opsc7311.ui.navigation.TimesheetApp
+import androidx.navigation.compose.rememberNavController
+import com.example.opsc7311.ui.navigation.RootNavigationGraph
 import com.example.opsc7311.ui.theme.Opsc7311Theme
 
 
@@ -21,7 +22,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TimesheetApp()
+                    RootNavigationGraph(navController = rememberNavController())
                 }
             }
         }

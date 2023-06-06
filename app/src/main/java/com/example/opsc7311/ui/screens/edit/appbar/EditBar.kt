@@ -1,4 +1,4 @@
-package com.example.opsc7311.ui.screens.timesheet.appbar
+package com.example.opsc7311.ui.screens.edit.appbar
 
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -14,8 +14,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.opsc7311.ui.screens.timesheet.EditScreenUiState
-import com.example.opsc7311.ui.screens.timesheet.EditScreenViewModel
+import com.example.opsc7311.ui.screens.edit.EditScreenUiState
+import com.example.opsc7311.ui.screens.edit.EditScreenViewModel
 
 @Composable
 fun EditBar(
