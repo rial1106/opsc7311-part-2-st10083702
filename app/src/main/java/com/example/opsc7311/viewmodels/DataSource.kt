@@ -24,7 +24,7 @@ object DataSource {
             images = mutableListOf(R.drawable.image_1, R.drawable.image_2)
         ),
 
-        Timesheet(id = 3, "Untitled",
+        Timesheet(id = 2, "Untitled",
             categories = mutableListOf(
                 "test", "butter", "mash",
                 "apples", "cream", "tomato",
@@ -33,7 +33,7 @@ object DataSource {
             images = mutableListOf(R.drawable.image_3, R.drawable.image_4, R.drawable.image_1)
         ),
         Timesheet(
-            id = 4, "Maps"
+            id = 3, "Maps"
         )
     )
 }

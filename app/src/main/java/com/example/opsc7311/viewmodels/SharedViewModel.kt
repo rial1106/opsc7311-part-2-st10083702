@@ -34,13 +34,14 @@ class SharedViewModel : ViewModel() {
     }
     private fun filterList() {
 
-        val date1: Date
-        val date2: Date
+        var date1: Date
+        var date2: Date
         try {
             date1 = Converters.localDateToDate.parse(_uiState.value.startDate) as Date
             date2 = Converters.localDateToDate.parse(_uiState.value.endDate) as Date
         } catch (e: Exception) {
-            return
+            date1 = Date(0)
+            date2 = Date()
         }
 
         val result: MutableList<Timesheet> = mutableListOf()
@@ -73,12 +74,16 @@ class SharedViewModel : ViewModel() {
     fun addTimesheet(timesheet: Timesheet) {
         _uiState.value.list.add(timesheet)
         filterList()
+    }
 
-        val newArr = _uiState.value.list
-        Log.d("aaaaaaa-newArr-vm", newArr.toList().toString())
-        _uiState.update { currentState ->
-            currentState.copy(list = newArr)
+    fun editTimesheet(timesheet: Timesheet) {
+        val i = _uiState.value.list.indexOfFirst { it.id == timesheet.id }
+        if(i >= 0)
+        {
+            _uiState.value.list[i] = timesheet
+            filterList()
         }
+
     }
 
     fun deleteTimesheet(id: Int) {

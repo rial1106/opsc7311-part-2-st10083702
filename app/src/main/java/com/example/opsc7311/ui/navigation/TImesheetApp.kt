@@ -16,6 +16,7 @@ import com.example.opsc7311.ui.screens.list.TimesheetListScreen
 import com.example.opsc7311.ui.screens.list.appbar.FilterBarViewModel
 import com.example.opsc7311.ui.screens.timesheet.EditScreenViewModel
 import com.example.opsc7311.ui.screens.timesheet.TimesheetEditScreen
+import com.example.opsc7311.util.IdGenerator
 import com.example.opsc7311.viewmodels.SharedViewModel
 
 object Screens {
@@ -89,26 +90,35 @@ fun TimesheetApp(
                     )
                 }
             ) {
-                sharedViewModel.deleteTimesheet(editScreenViewModel.uiState.value.id)
-                sharedViewModel.addTimesheet(
-                    Timesheet(
-                        id = editScreenViewModel.uiState.value.id,
-                        title = editScreenViewModel.uiState.value.title,
-                        date = editScreenViewModel.uiState.value.date,
-                        startTime = editScreenViewModel.uiState.value.startTime,
-                        endTime = editScreenViewModel.uiState.value.endTime,
-                        categories = editScreenViewModel.uiState.value.categories,
-                        images = editScreenViewModel.uiState.value.images
+
+                Log.d("aaaaaa-ID", editScreenViewModel.uiState.value.id.toString())
+
+                if(editScreenViewModel.uiState.value.id == -1)
+                {
+                    sharedViewModel.addTimesheet(
+                        Timesheet(
+                            id = IdGenerator.getNewId(),
+                            title = editScreenViewModel.uiState.value.title,
+                            date = editScreenViewModel.uiState.value.date,
+                            startTime = editScreenViewModel.uiState.value.startTime,
+                            endTime = editScreenViewModel.uiState.value.endTime,
+                            categories = editScreenViewModel.uiState.value.categories,
+                            images = editScreenViewModel.uiState.value.images
+                        )
                     )
-                )
-                Log.d(
-                    "aaaaaaaa-filtered", sharedViewModel.uiState.value.filteredList.toList()
-                        .toString()
-                )
-                Log.d(
-                    "aaaaaaaa-normal", sharedViewModel.uiState.value.list.toList()
-                        .toString()
-                )
+                } else {
+                    sharedViewModel.editTimesheet(
+                        Timesheet(
+                            id = editScreenViewModel.uiState.value.id,
+                            title = editScreenViewModel.uiState.value.title,
+                            date = editScreenViewModel.uiState.value.date,
+                            startTime = editScreenViewModel.uiState.value.startTime,
+                            endTime = editScreenViewModel.uiState.value.endTime,
+                            categories = editScreenViewModel.uiState.value.categories,
+                            images = editScreenViewModel.uiState.value.images
+                        )
+                    )
+                }
                 navController.navigate(
                     route = "List"
                 )
