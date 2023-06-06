@@ -1,5 +1,6 @@
 package com.example.opsc7311.ui.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -13,8 +14,8 @@ import androidx.navigation.navArgument
 import com.example.opsc7311.ui.models.Timesheet
 import com.example.opsc7311.ui.screens.list.TimesheetListScreen
 import com.example.opsc7311.ui.screens.list.appbar.FilterBarViewModel
+import com.example.opsc7311.ui.screens.timesheet.EditScreenViewModel
 import com.example.opsc7311.ui.screens.timesheet.TimesheetEditScreen
-import com.example.opsc7311.ui.screens.timesheet.TimesheetViewModel
 import com.example.opsc7311.viewmodels.SharedViewModel
 
 object Screens {
@@ -65,23 +66,54 @@ fun TimesheetApp(
         ) { navBackStackEntry ->
 
             val id = navBackStackEntry.arguments!!.getInt(Screens.EDIT_WINDOW_ARGUMENT_KEY)
-            var timesheet = sharedViewModel.list.find { it.id == id }
-            if(timesheet == null) timesheet = Timesheet()
+            var timesheet = findTimesheet(sharedViewModel, id)
+            if (timesheet == null) timesheet = Timesheet()
 
             // hacky way to pass parameter to view model
             // taken from
             // https://stackoverflow.com/questions/46283981/android-viewmodel-additional-arguments
             // authored by: mlykotom on Oct 12, 2017 at 8:18
-            val timesheetViewModel: TimesheetViewModel =
+            val editScreenViewModel: EditScreenViewModel =
                 viewModel(factory = object : ViewModelProvider.Factory {
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return TimesheetViewModel(timesheet) as T
-                }
-            })
+                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                        return EditScreenViewModel(timesheet) as T
+                    }
+                })
 
             TimesheetEditScreen(
-                timesheetViewModel = timesheetViewModel
-            )
+                editScreenViewModel = editScreenViewModel,
+                onBackPressed = {
+                                // TODO
+                }
+            ) {
+                sharedViewModel.deleteTimesheet(editScreenViewModel.uiState.value.id)
+                sharedViewModel.addTimesheet(
+                    Timesheet(
+                        id = editScreenViewModel.uiState.value.id,
+                        title = editScreenViewModel.uiState.value.title,
+                        date = editScreenViewModel.uiState.value.date,
+                        startTime = editScreenViewModel.uiState.value.startTime,
+                        endTime = editScreenViewModel.uiState.value.endTime,
+                        categories = editScreenViewModel.uiState.value.categories,
+                        images = editScreenViewModel.uiState.value.images
+                    )
+                )
+                navController.navigate(
+                    route = "List"
+                )
+                Log.d(
+                    "aaaaaaaa-filtered", sharedViewModel.uiState.value.filteredList.toList()
+                        .toString()
+                )
+                Log.d(
+                    "aaaaaaaa-normal", sharedViewModel.uiState.value.list.toList()
+                        .toString()
+                )
+            }
         }
     }
+}
+
+private fun findTimesheet(sharedViewModel: SharedViewModel, id: Int): Timesheet? {
+    return sharedViewModel.uiState.value.list.find { it.id == id }
 }

@@ -1,11 +1,9 @@
 package com.example.opsc7311.ui.screens.list
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.FloatingActionButton
@@ -13,6 +11,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,36 +22,23 @@ import com.example.opsc7311.ui.screens.list.appbar.FilterBarViewModel
 import com.example.opsc7311.viewmodels.SharedViewModel
 
 @Composable
-fun TimesheetList(
+fun ListScreen(
     sharedViewModel: SharedViewModel,
     onTimesheetClicked: (Int) -> Unit,
     onImageClicked: (Int) -> Unit,
     modifier: Modifier = Modifier
-)
-{
+) {
 
-    LazyColumn(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+    val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
+
+    EditScreenContent(
+        sharedViewModelUiState = sharedViewModelUiState,
+        onTimesheetClicked = onTimesheetClicked,
+        onImageClicked = onImageClicked,
+        modifier = modifier
     )
-    {
-        items(
-            items = sharedViewModel.filteredList,
-            key = { timesheet ->
-                // Return a stable + unique key for the item
-                timesheet.id
-            }
-        ) {timeSheet->
-            
-            TimesheetListItem(
-                timeSheet = timeSheet,
-                onTimesheetClicked = onTimesheetClicked,
-                onImageClicked = onImageClicked
-            )
-        }
-    }
-}
 
+}
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -66,24 +53,45 @@ fun TimesheetListScreen(
     Scaffold(
         topBar = {
             FilterBar(
-                sharedViewModel = sharedViewModel,
-                filterBarViewModel = filterBarViewModel
+                filterBarViewModel = filterBarViewModel,
+                onStartDateSelected = {date->
+                    filterBarViewModel.updateStartDate(date.toString())
+                    sharedViewModel.setStartDate(date.toString())
+                    filterBarViewModel.setStartDateFilterExpanded(false)
+                    filterBarViewModel.setShowStartDatePicker(false)
+
+                },
+                onEndDateSelected = {date->
+                    filterBarViewModel.updateEndDate(date.toString())
+
+                    sharedViewModel.setEndDate(date.toString())
+                    filterBarViewModel.setEndDateFilterExpanded(false)
+                    filterBarViewModel.setShowEndDatePicker(false)
+                },
+                onResetButtonClick = {
+                    filterBarViewModel.reset()
+                    sharedViewModel.resetFilter()
+                }
             )
         },
         floatingActionButton = {
             ListFab(onFabClicked = onFabClicked)
         }
     ) {
-        TimesheetList(
-            sharedViewModel = sharedViewModel,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 72.dp, start = 16.dp, end = 16.dp),
-            onTimesheetClicked = onTimesheetClicked,
-            onImageClicked = {
-                // Do not do anything
-            }
-        )
+        Box(
+            modifier = Modifier.padding(it)
+        ) {
+            ListScreen(
+                sharedViewModel = sharedViewModel,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                onTimesheetClicked = onTimesheetClicked,
+                onImageClicked = {
+                    // Do not do anything
+                }
+            )
+        }
     }
 }
 

@@ -1,93 +1,81 @@
 package com.example.opsc7311.viewmodels
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
-import com.example.opsc7311.R
 import com.example.opsc7311.ui.models.Timesheet
 import com.example.opsc7311.util.Converters
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import java.util.Date
 
 
 class SharedViewModel : ViewModel() {
 
-    private val _list = mutableStateListOf(
-        Timesheet(
-            id = 0,
-            title = "Work Sheet",
-            startTime = "03:17",
-            endTime = "05:17",
-            date = "13 May 2023",
-            categories = mutableListOf("eggs", "rice")
-        ),
-        Timesheet(
-            id = 1,
-            title = "Park View Construction Project",
-            startTime = "01:12", endTime = "12:39",
-            date = "24 April 2022", categories = mutableListOf(
-                "cranes", "trucks", "ladders",
-                "screws", "beads", "traces", "workers"
-            ),
-            images = mutableListOf(R.drawable.image_1, R.drawable.image_2)
-        ),
+    // UI State
+    private val _uiState = MutableStateFlow(SharedViewModelUiState())
+    val uiState: StateFlow<SharedViewModelUiState> = _uiState.asStateFlow()
 
-        Timesheet(id = 3, "Untitled",
-            categories = mutableListOf(
-                "test", "butter", "mash",
-                "apples", "cream", "tomato",
-                "lemon", "sauce"
-            ),
-            images = mutableListOf(R.drawable.image_3, R.drawable.image_4, R.drawable.image_1)
-        ),
-        Timesheet(
-            id = 4, "Maps"
-        )
-    )
-    val list: List<Timesheet> = _list
+    fun setStartDate(startDate: String)
+    {
+        _uiState.update { currentState ->
+            currentState.copy(startDate = startDate)
+        }
+        filterList()
+    }
 
-
-
-    private var _filteredList = _list.toMutableStateList()
-    val filteredList: List<Timesheet> = _filteredList
-    fun FilterList(startDate: String, endDate: String) {
+    fun setEndDate(endDate: String)
+    {
+        _uiState.update { currentState ->
+            currentState.copy(endDate = endDate)
+        }
+        filterList()
+    }
+    private fun filterList() {
 
         val date1: Date
         val date2: Date
         try {
-            date1 = Converters.localDateToDate.parse(startDate) as Date
-            date2 = Converters.localDateToDate.parse(endDate) as Date
+            date1 = Converters.localDateToDate.parse(_uiState.value.startDate) as Date
+            date2 = Converters.localDateToDate.parse(_uiState.value.endDate) as Date
         } catch (e: Exception) {
             return
         }
 
         val result: MutableList<Timesheet> = mutableListOf()
 
-        for (x in _list) {
+        for (x in _uiState.value.list) {
             val date = Converters.dateToTextDisplay.parse(x.date) as Date
             if (date in date1 .. date2) {
                 result.add(x)
             }
         }
 
-        _filteredList.clear()
+        _uiState.value.filteredList.clear()
         for(y in result)
         {
-            _filteredList.add(y)
+            _uiState.value.filteredList.add(y)
         }
 
     }
 
-    fun ResetFilter()
+    fun resetFilter()
     {
-        _filteredList.clear()
-        _filteredList.addAll(_list)
+        _uiState.value.filteredList.clear()
+        _uiState.value.filteredList.addAll(_uiState.value.list)
+
+        _uiState.update { currentState ->
+            currentState.copy(startDate = "Start Date", endDate = "End Date")
+        }
     }
 
-    fun AddTimesheet(timesheet: Timesheet) {
-        _list.add(timesheet)
+    fun addTimesheet(timesheet: Timesheet) {
+        _uiState.value.list.add(timesheet)
+        filterList()
     }
 
-    fun DeleteTimesheet(id: Int) {
-        _list.removeIf { it.id == id }
+    fun deleteTimesheet(id: Int) {
+        _uiState.value.list.removeIf { it.id == id }
+        filterList()
     }
 }

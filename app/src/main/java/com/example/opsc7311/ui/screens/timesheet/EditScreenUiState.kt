@@ -6,7 +6,7 @@ import com.example.opsc7311.util.Converters
 import com.maxkeppeker.sheets.core.models.base.UseCaseState
 import java.util.Date
 
-data class TimesheetUiState(
+data class EditScreenUiState(
     val id: Int = 0,
     val title: String = "Untitled",
     val date: String = Converters.dateToTextDisplay.format(Date()),

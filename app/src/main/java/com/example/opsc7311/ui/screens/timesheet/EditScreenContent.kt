@@ -29,8 +29,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -40,33 +38,48 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.opsc7311.ui.theme.Opsc7311Theme
 import com.example.opsc7311.util.DateCalPicker
 import com.example.opsc7311.util.ImageRow
 import com.example.opsc7311.util.TimeClockPicker
-
+import java.time.LocalDate
 
 @Composable
-fun TimesheetEditScreen(timesheetViewModel: TimesheetViewModel) {
+fun EditScreenContent(
+    editScreenUiState: EditScreenUiState,
+    onSelectDate: (LocalDate) -> Unit,
+    onStartTimeSelected: (Int, Int) -> Unit,
+    onEndTimeSelected: (Int, Int) -> Unit,
+    onDateDisplayClick: () -> Unit,
+    onStartTimeDisplayClick: () -> Unit,
+    onEndTimeDisplayClick: () -> Unit,
+    onCategoryViewClick: () -> Unit,
+    onImageClicked: (Int) -> Unit,
+    onDismissImagePopup: () -> Unit,
+    newCategoryText: String,
+    onNewCategoryTextValChanged: (String) -> Unit,
+    onDismissAddCategoryPopup: () -> Unit,
+    onConfirmAddCategoryClicked: () -> Unit,
+    modifier: Modifier = Modifier
 
-    val timesheetUiState by timesheetViewModel.uiState.collectAsState()
-
+)
+{
     // Calendar picker
-    DateCalPicker(calendarState = timesheetUiState.calendarState,
-        onSelectDate = {date-> timesheetViewModel.updateDate(date.toString())},
+    DateCalPicker(calendarState = editScreenUiState.calendarState,
+        onSelectDate = onSelectDate,
         onNegativeClick = {}
     )
 
     // First time picker
-    TimeClockPicker(clockState = timesheetUiState.clockState1, onTimeSelected = { hours, minutes ->
-        timesheetViewModel.updateStartTime(hours = hours, minutes = minutes)
-    })
+    TimeClockPicker(
+        clockState = editScreenUiState.clockState1,
+        onTimeSelected = onStartTimeSelected
+    )
 
     // Second time picker
-    TimeClockPicker(clockState = timesheetUiState.clockState2, onTimeSelected = { hours, minutes ->
-        timesheetViewModel.updateEndTime(hours = hours, minutes = minutes)
-    })
+    TimeClockPicker(
+        clockState = editScreenUiState.clockState2,
+        onTimeSelected = onEndTimeSelected
+    )
 
     // Show the column of pickers and dates
     Column(
@@ -80,29 +93,23 @@ fun TimesheetEditScreen(timesheetViewModel: TimesheetViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp),
-            date = timesheetUiState.date,
-            onIconClicked = {
-                timesheetViewModel.showCalendar()
-            }
+            date = editScreenUiState.date,
+            onIconClicked = onDateDisplayClick
         )
         TimeDisplay(
             title = "Start Time",
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp),
-            time = timesheetUiState.startTime,
-            onIconClicked = {
-                timesheetViewModel.showClock1()
-            }
+            time = editScreenUiState.startTime,
+            onIconClicked = onStartTimeDisplayClick
         )
         TimeDisplay(
             title = "End Time",
             modifier = Modifier
                 .fillMaxWidth(),
-            time = timesheetUiState.endTime,
-            onIconClicked = {
-                timesheetViewModel.showClock2()
-            }
+            time = editScreenUiState.endTime,
+            onIconClicked = onEndTimeDisplayClick
         )
 
         DurationDisplay(
@@ -110,66 +117,46 @@ fun TimesheetEditScreen(timesheetViewModel: TimesheetViewModel) {
                 .padding(top = 28.dp, bottom = 28.dp)
                 .height(120.dp)
                 .width(160.dp),
-            duration = timesheetUiState.duration
+            duration = editScreenUiState.duration
         )
 
         CategoryView(
             modifier = Modifier,
-            categories = timesheetUiState.categories
-        ) {
-            timesheetViewModel.showEnterCategoryPopup(true)
-        }
-
-        Gallery(
-            modifier = Modifier
-                .height(160.dp)
-                .padding(top = 4.dp),
-            onManageImagesClick = {},
-            images = timesheetUiState.images,
-            onImageClicked = { imageID: Int ->
-                timesheetViewModel.showImageDetailPopup(true)
-                timesheetViewModel.setImageToShow(imageID)
-            }
+            categories = editScreenUiState.categories,
+            onCategoryClick = onCategoryViewClick
         )
 
-        if (timesheetUiState.showImageDetailPopup) {
+        Gallery(
+            images = editScreenUiState.images,
+            onManageImagesClick = {},
+            onImageClicked = onImageClicked
+        )
+
+        if (editScreenUiState.showImageDetailPopup) {
             ImagePopup(
-                imageID = timesheetUiState.imageId,
-                modifier = Modifier
-            ) {
-                timesheetViewModel.showImageDetailPopup(false)
-            }
+                imageID = editScreenUiState.imageId,
+                modifier = Modifier,
+                onDismissRequested = onDismissImagePopup
+            )
         }
 
 
-        if (timesheetUiState.showEnterCategoryPopup) {
+        if (editScreenUiState.showEnterCategoryPopup) {
             AddCategoryPopup(
-                text = timesheetViewModel.newCategoryText,
-                isUnique = timesheetUiState.isNewCategoryTextUnique,
-                onValueChanged = {
-                    timesheetViewModel.updateAddCategoryText(it)
-                },
-                onDismissRequested = {
-                    timesheetViewModel.updateAddCategoryText("")
-                    timesheetViewModel.showEnterCategoryPopup(false)
-                }
-            ) {
-                timesheetViewModel.addCategory()
-                timesheetViewModel.updateAddCategoryText("")
-                timesheetViewModel.showEnterCategoryPopup(false)
-            }
+                text = newCategoryText,
+                isUnique = editScreenUiState.isNewCategoryTextUnique,
+                onValueChanged = onNewCategoryTextValChanged,
+                onDismissRequested = onDismissAddCategoryPopup,
+                onConfirmClicked = onConfirmAddCategoryClicked
+            )
         }
 
     }
-
 }
 
-// End of design, rest is implementation
 
-
-
-
-
+// From here on is the implementation of the composable
+// used above.
 
 @Composable
 fun AddCategoryPopup(
@@ -191,8 +178,7 @@ fun AddCategoryPopup(
                 singleLine = true,
                 label = { Text(text = "Name") },
                 supportingText = {
-                    if(!isUnique)
-                    {
+                    if (!isUnique) {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
                             text = "There is already a category with this name!"
@@ -238,7 +224,6 @@ fun ImagePopup(
 @Composable
 fun Gallery(
     images: MutableList<Int>,
-    modifier: Modifier = Modifier,
     onManageImagesClick: () -> Unit,
     onImageClicked: (imageID: Int) -> Unit
 ) {
@@ -395,10 +380,21 @@ fun TimeDisplay(
 
 @Preview(showBackground = true)
 @Composable
-fun TimesheetPreview() {
-    Opsc7311Theme {
-        TimesheetEditScreen(
-            timesheetViewModel = viewModel()
-        )
-    }
+fun EditScreenContentPreview() {
+    EditScreenContent(
+        editScreenUiState = EditScreenUiState(),
+        onSelectDate = {},
+        onStartTimeSelected = { _, _ ->},
+        onEndTimeSelected = { _, _ ->},
+        onDateDisplayClick = { /*TODO*/ },
+        onStartTimeDisplayClick = { /*TODO*/ },
+        onEndTimeDisplayClick = { /*TODO*/ },
+        onCategoryViewClick = { /*TODO*/ },
+        onImageClicked = {},
+        onDismissImagePopup = { /*TODO*/ },
+        newCategoryText = "category",
+        onNewCategoryTextValChanged = {},
+        onDismissAddCategoryPopup = { /*TODO*/ },
+        onConfirmAddCategoryClicked = {}
+    )
 }

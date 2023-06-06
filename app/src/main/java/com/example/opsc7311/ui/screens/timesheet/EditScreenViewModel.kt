@@ -6,18 +6,17 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.opsc7311.ui.models.Timesheet
 import com.example.opsc7311.util.Converters
-import com.example.opsc7311.viewmodels.SharedViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.util.Date
 
-class TimesheetViewModel(timesheet: Timesheet) : ViewModel() {
+class EditScreenViewModel(timesheet: Timesheet) : ViewModel() {
 
     // UI State
-    private val _uiState = MutableStateFlow(TimesheetUiState())
-    val uiState: StateFlow<TimesheetUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(EditScreenUiState())
+    val uiState: StateFlow<EditScreenUiState> = _uiState.asStateFlow()
 
     init {
         _uiState.update { currentState ->
@@ -159,5 +158,12 @@ class TimesheetViewModel(timesheet: Timesheet) : ViewModel() {
 
         // Do not show decimals
         return String.format("%.0f", hoursBetween)
+    }
+
+    fun updateTitle(text: String)
+    {
+        _uiState.update { currentState ->
+            currentState.copy(title = text)
+        }
     }
 }
