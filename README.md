@@ -1,5 +1,17 @@
 # Timesheet Tracker
-This is a timesheet tracker app built using Jetpack Compose.
+This is a timesheet tracker app built using Jetpack Compose for OPSC7311.
+
+# Group Details
+```
+Rial Seebran ST10083702
+Ricaylin Ramsamy ST10083902
+```
+
+The login details are
+```
+Username: rial
+Password: 123
+```
 
 # Features
 - Track your timesheets
