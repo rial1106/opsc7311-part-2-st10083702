@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.opsc7311.ui.screens.home.HomeScreen
+import com.example.opsc7311.ui.screens.login.LoginScreen
 import com.example.opsc7311.viewmodels.SharedViewModel
 
 object Graph {
@@ -24,7 +25,7 @@ fun RootNavigationGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
         route = Graph.ROOT,
-        startDestination = Graph.HOME
+        startDestination = Graph.AUTHENTICATION
     ) {
         // Do not pass navController as it has its own NavHost.
         // Each NavHost must have its own navHostController
@@ -32,5 +33,16 @@ fun RootNavigationGraph(navController: NavHostController) {
             HomeScreen()
         }
 
+        composable(route = Graph.AUTHENTICATION) {
+            LoginScreen(
+                onSuccessfulLogin = {
+                    navController.navigate(route = Graph.HOME){
+                        popUpTo(route = Graph.AUTHENTICATION) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
     }
 }
