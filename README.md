@@ -3,8 +3,8 @@ This is a timesheet tracker app built using Jetpack Compose for OPSC7311.
 
 # Group Details
 ```
-Rial Seebran ST10083702
-Ricaylin Ramsamy ST10083902
+Rial Seebran ST10083702@vcconnect.edu.za
+Ricaylin Ramsamy ST10083902@vcconnect.edu.za
 ```
 
 The login details are
