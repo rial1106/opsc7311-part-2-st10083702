@@ -31,7 +31,7 @@ fun ListScreen(
 
     val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
-    EditScreenContent(
+    ListScreenContent(
         sharedViewModelUiState = sharedViewModelUiState,
         onTimesheetClicked = onTimesheetClicked,
         onImageClicked = onImageClicked,

@@ -74,3 +74,34 @@ fun TimeClockPicker(
         selection = ClockSelection.HoursMinutes(onPositiveClick = onTimeSelected)
     )
 }
+
+fun calculateDuration(startTime: String, endTime: String) : String
+{
+    // Convert the times to minutes
+    val minutes1 = startTime.split(":")[0].toInt() * 60 + startTime.split(":")[1].toInt()
+    val minutes2 = endTime.split(":")[0].toInt() * 60 + endTime.split(":")[1].toInt()
+
+    var hoursBetween = (minutes2 - minutes1).toDouble() / 60.0
+
+    if (minutes2 < minutes1) {
+        hoursBetween += 24
+    }
+
+    // Do not show decimals
+    return String.format("%.0f", hoursBetween)
+}
+
+fun calculateDuration(startTime: String, endTime: String, hideDecimals: Boolean = true) : Double
+{
+    // Convert the times to minutes
+    val minutes1 = startTime.split(":")[0].toInt() * 60 + startTime.split(":")[1].toInt()
+    val minutes2 = endTime.split(":")[0].toInt() * 60 + endTime.split(":")[1].toInt()
+
+    var hoursBetween = (minutes2 - minutes1).toDouble() / 60.0
+
+    if (minutes2 < minutes1) {
+        hoursBetween += 24
+    }
+
+    return hoursBetween
+}

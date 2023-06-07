@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -22,6 +23,8 @@ import com.example.opsc7311.ui.navigation.Graph
 import com.example.opsc7311.ui.navigation.HomeGraph
 import com.example.opsc7311.ui.navigation.HomeNavGraph
 import com.example.opsc7311.ui.navigation.TimesheetNavGraph
+import com.example.opsc7311.ui.screens.list.appbar.FilterBarViewModel
+import com.example.opsc7311.viewmodels.SharedViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -33,7 +36,14 @@ fun HomeScreen(navController: NavHostController = rememberNavController())
         Box(
             modifier = Modifier.padding(PaddingValues)
         ){
-            HomeNavGraph(navController)
+            val sharedViewModel: SharedViewModel = viewModel()
+            val filterBarViewModel: FilterBarViewModel = viewModel()
+
+            HomeNavGraph(
+                navController = navController,
+                sharedViewModel = sharedViewModel,
+                filterBarViewModel = filterBarViewModel
+            )
         }
     }
 }

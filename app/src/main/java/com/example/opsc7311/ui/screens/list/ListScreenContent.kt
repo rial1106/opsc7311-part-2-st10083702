@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.example.opsc7311.viewmodels.SharedViewModelUiState
 
 @Composable
-fun EditScreenContent(
+fun ListScreenContent(
     sharedViewModelUiState: SharedViewModelUiState,
     onTimesheetClicked: (Int) -> Unit,
     onImageClicked: (Int) -> Unit,
@@ -40,9 +40,9 @@ fun EditScreenContent(
 
 @Preview
 @Composable
-fun EditScreenContentPreview()
+fun ListScreenContentPreview()
 {
-    EditScreenContent(
+    ListScreenContent(
         sharedViewModelUiState = SharedViewModelUiState(),
         onTimesheetClicked = {},
         onImageClicked = {}

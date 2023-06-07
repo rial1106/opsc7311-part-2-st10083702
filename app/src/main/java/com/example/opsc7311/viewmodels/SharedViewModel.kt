@@ -4,11 +4,13 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.opsc7311.ui.models.Timesheet
 import com.example.opsc7311.util.Converters
+import com.example.opsc7311.util.calculateDuration
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.util.Date
+import kotlin.math.roundToInt
 
 
 class SharedViewModel : ViewModel() {
@@ -44,20 +46,39 @@ class SharedViewModel : ViewModel() {
             date2 = Date()
         }
 
-        val result: MutableList<Timesheet> = mutableListOf()
+        val sortedTimesheetList: MutableList<Timesheet> = mutableListOf()
+        val catMap = mutableMapOf<String, Double>()
 
         for (x in _uiState.value.list) {
             val date = Converters.dateToTextDisplay.parse(x.date) as Date
             if (date in date1 .. date2) {
-                result.add(x)
+                sortedTimesheetList.add(x)
+
+                // Get the sorted categories at the same time
+                for (c in x.categories) {
+                    catMap[c] = (catMap[c] ?: 0).toDouble() +
+                            calculateDuration(
+                                x.startTime, x.endTime, hideDecimals = false
+                            )
+                }
+                //
             }
         }
 
         _uiState.value.filteredList.clear()
-        for(y in result)
-        {
-            _uiState.value.filteredList.add(y)
+        _uiState.value.filteredList.addAll(sortedTimesheetList)
+
+        //
+
+        val filteredCategories = catMap
+            .mapValues { (_, value) -> value.roundToInt() }
+            .toSortedMap()
+
+        _uiState.update { currentState ->
+            currentState.copy(filteredCategories = filteredCategories)
         }
+
+        //
 
     }
 
@@ -66,8 +87,20 @@ class SharedViewModel : ViewModel() {
         _uiState.value.filteredList.clear()
         _uiState.value.filteredList.addAll(_uiState.value.list)
 
+        // Reset Categories
+        val result = _uiState.value.filteredList
+            .flatMap { myClass -> myClass.categories.map { string -> Pair(string, calculateDuration
+                (myClass.startTime, myClass.endTime, hideDecimals = false)) } }
+            .groupBy { it.first }
+            .mapValues { entry -> entry.value.sumOf { it.second }.roundToInt() }
+            .toSortedMap()
+
         _uiState.update { currentState ->
-            currentState.copy(startDate = "Start Date", endDate = "End Date")
+            currentState.copy(
+                startDate = "Start Date",
+                endDate = "End Date",
+                filteredCategories = result
+            )
         }
     }
 

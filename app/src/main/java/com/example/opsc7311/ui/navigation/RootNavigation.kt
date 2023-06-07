@@ -1,10 +1,16 @@
 package com.example.opsc7311.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navigation
 import com.example.opsc7311.ui.screens.home.HomeScreen
+import com.example.opsc7311.viewmodels.SharedViewModel
 
 object Graph {
     const val ROOT = "root_graph"
@@ -14,8 +20,7 @@ object Graph {
 }
 
 @Composable
-fun RootNavigationGraph(navController: NavHostController)
-{
+fun RootNavigationGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
         route = Graph.ROOT,
@@ -26,5 +31,6 @@ fun RootNavigationGraph(navController: NavHostController)
         composable(route = Graph.HOME) {
             HomeScreen()
         }
+
     }
 }

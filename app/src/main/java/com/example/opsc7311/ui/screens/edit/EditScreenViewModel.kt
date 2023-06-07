@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.opsc7311.ui.models.Timesheet
 import com.example.opsc7311.util.Converters
+import com.example.opsc7311.util.calculateDuration
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -142,22 +143,6 @@ class EditScreenViewModel(timesheet: Timesheet) : ViewModel() {
         _uiState.update { currentState ->
             currentState.copy(endTime = endTime, duration = duration)
         }
-    }
-
-    private fun calculateDuration(startTime: String, endTime: String) : String
-    {
-        // Convert the times to minutes
-        val minutes1 = startTime.split(":")[0].toInt() * 60 + startTime.split(":")[1].toInt()
-        val minutes2 = endTime.split(":")[0].toInt() * 60 + endTime.split(":")[1].toInt()
-
-        var hoursBetween = (minutes2 - minutes1).toDouble() / 60.0
-
-        if (minutes2 < minutes1) {
-            hoursBetween += 24
-        }
-
-        // Do not show decimals
-        return String.format("%.0f", hoursBetween)
     }
 
     fun updateTitle(text: String)
